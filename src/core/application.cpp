@@ -20,6 +20,9 @@
    along with Clementine.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QSettings>
+#include <QTimer>
+
 #include "application.h"
 
 #include "config.h"
@@ -177,7 +180,9 @@ class ApplicationImpl {
 };
 
 Application::Application(QObject* parent)
-    : QObject(parent), p_(new ApplicationImpl(this)) {
+    : QObject(parent),
+      p_(new ApplicationImpl(this)),
+      settings_timer_(new QTimer(this)) {
   // This must be before library_->Init();
   // In the constructor the helper waits for the signal
   // PlaylistManagerInitialized
@@ -188,6 +193,10 @@ Application::Application(QObject* parent)
 
   // TODO(John Maguire): Make this not a weird singleton.
   tag_reader_client();
+
+  settings_timer_->setInterval(1000);
+  settings_timer_->setSingleShot(true);
+  connect(settings_timer_, SIGNAL(timeout()), SLOT(SaveSettings_()));
 }
 
 Application::~Application() {
@@ -228,6 +237,8 @@ QString Application::language_without_region() const {
   }
   return language_name_;
 }
+
+void Application::SaveSettings_() { emit SaveSettings(settings_); }
 
 void Application::ReloadSettings() { emit SettingsChanged(); }
 
@@ -326,3 +337,5 @@ TagReaderClient* Application::tag_reader_client() const {
 TaskManager* Application::task_manager() const {
   return p_->task_manager_.get();
 }
+
+void Application::DirtySettings() { settings_timer_->start(); }
