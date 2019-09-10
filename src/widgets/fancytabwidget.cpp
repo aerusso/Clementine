@@ -290,18 +290,21 @@ FancyTabWidget::FancyTabWidget(QWidget* parent) : QTabWidget(parent),
     connect(tabBar, SIGNAL(currentChanged(int)), this, SLOT(currentTabChanged(int)));
 }
 
-void FancyTabWidget::loadSettings(QSettings& settings) {
-  for (int i = 0; i < count(); i++) {
-    int originalIndex = tabBar()->tabData(i).toInt();
-    std::string k = "tab_index_" + std::to_string(originalIndex);
+void FancyTabWidget::loadSettings(const char *kSettingsGroup) {
+    QSettings settings;
+    settings.beginGroup(kSettingsGroup);
 
-    int newIndex = settings.value(QString::fromStdString(k), i).toInt();
+    for(int i =0;i<count();i++) {
+        int originalIndex = tabBar()->tabData(i).toInt();
+        std::string k = "tab_index_" + std::to_string(originalIndex);
 
-    if (newIndex >= 0)
-      tabBar()->moveTab(i, newIndex);
-    else
-      removeTab(i);  // Does not delete page
-  }
+        int newIndex = settings.value(QString::fromStdString(k), i).toInt();
+
+        if(newIndex >= 0)
+            tabBar()->moveTab(i,newIndex);
+        else
+            removeTab(i); // Does not delete page
+    }
 }
 
 void FancyTabWidget::saveSettings(QSettings& settings) {
