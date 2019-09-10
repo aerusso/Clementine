@@ -2805,6 +2805,7 @@ void MainWindow::Exit() {
   dirty_playback_ = true;
   settings_.setValue("show_sidebar",
                      ui_->action_toggle_show_sidebar->isChecked());
+  settings_.endGroup();
   SaveSettings(&settings_);
   settings_.sync();
 
