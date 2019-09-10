@@ -70,7 +70,8 @@ bool Application::kIsPortable = false;
 class ApplicationImpl {
  public:
   ApplicationImpl(Application* app)
-      : tag_reader_client_([=]() {
+      : settings_timer_(app),
+        tag_reader_client_([=]() {
           TagReaderClient* client = new TagReaderClient(app);
           app->MoveToNewThread(client);
           client->Start();
@@ -153,6 +154,9 @@ class ApplicationImpl {
         }) {
   }
 
+  QTimer settings_timer_;
+  QSettings settings_;
+
   Lazy<TagReaderClient> tag_reader_client_;
   Lazy<Database> database_;
   Lazy<AlbumCoverLoader> album_cover_loader_;
@@ -180,9 +184,7 @@ class ApplicationImpl {
 };
 
 Application::Application(QObject* parent)
-    : QObject(parent),
-      p_(new ApplicationImpl(this)),
-      settings_timer_(new QTimer(this)) {
+    : QObject(parent), p_(new ApplicationImpl(this)) {
   // This must be before library_->Init();
   // In the constructor the helper waits for the signal
   // PlaylistManagerInitialized
@@ -194,9 +196,9 @@ Application::Application(QObject* parent)
   // TODO(John Maguire): Make this not a weird singleton.
   tag_reader_client();
 
-  settings_timer_->setInterval(1000);
-  settings_timer_->setSingleShot(true);
-  connect(settings_timer_, SIGNAL(timeout()), SLOT(SaveSettings_()));
+  p_->settings_timer_.setInterval(1000);
+  p_->settings_timer_.setSingleShot(true);
+  connect(&(p_->settings_timer_), SIGNAL(timeout()), SLOT(SaveSettings_()));
 }
 
 Application::~Application() {
@@ -238,7 +240,7 @@ QString Application::language_without_region() const {
   return language_name_;
 }
 
-void Application::SaveSettings_() { emit SaveSettings(&settings_); }
+void Application::SaveSettings_() { emit SaveSettings(&(p_->settings_)); }
 
 void Application::ReloadSettings() { emit SettingsChanged(); }
 
@@ -338,4 +340,4 @@ TaskManager* Application::task_manager() const {
   return p_->task_manager_.get();
 }
 
-void Application::DirtySettings() { settings_timer_->start(); }
+void Application::DirtySettings() { p_->settings_timer_.start(); }

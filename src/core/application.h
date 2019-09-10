@@ -123,8 +123,6 @@ signals:
   QString language_name_;
   std::unique_ptr<ApplicationImpl> p_;
   QList<QThread*> threads_;
-  QTimer* settings_timer_;
-  QSettings settings_;
 };
 
 #endif  // CORE_APPLICATION_H_
