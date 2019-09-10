@@ -307,7 +307,7 @@ MainWindow::MainWindow(Application* app, SystemTrayIcon* tray_icon, OSD* osd,
           SLOT(UpdateTrackSliderPosition()));
 
   connect(app_, SIGNAL(SaveSettings(QSettings&)),
-          SLOT(DoSaveSettings(QSettings&)));
+          SLOT(SaveSettings(QSettings&)));
 
   // Start initialising the player
   qLog(Debug) << "Initialising player";
@@ -1280,7 +1280,7 @@ void MainWindow::ScrobbleButtonVisibilityChanged(bool value) {
   }
 }
 
-void MainWindow::DoSaveSettings(QSettings& settings) {
+void MainWindow::SaveSettings(QSettings& settings) {
   if (!initialized_) return;
   settings.beginGroup(kSettingsGroup);
   if (dirty_geometry_) SaveGeometry(settings);
@@ -2805,7 +2805,7 @@ void MainWindow::Exit() {
   dirty_playback_ = true;
   settings_.setValue("show_sidebar",
                      ui_->action_toggle_show_sidebar->isChecked());
-  DoSaveSettings(settings_);
+  SaveSettings(settings_);
   settings_.sync();
 
   if (app_->player()->engine()->is_fadeout_enabled()) {

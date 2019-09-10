@@ -151,7 +151,7 @@ signals:
  private slots:
   void FilePathChanged(const QString& path);
 
-  void DoSaveSettings(QSettings& settings);
+  void SaveSettings(QSettings& settings);
   void MediaStopped();
   void MediaPaused();
   void MediaPlaying();
