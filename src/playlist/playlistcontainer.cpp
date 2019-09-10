@@ -123,7 +123,7 @@ void PlaylistContainer::SetApplication(Application* app) {
   app_ = app;
   SetManager(app_->playlist_manager());
   ui_->playlist->SetApplication(app_);
-  connect(app_, SIGNAL(SaveSettings(QSettings&)), SLOT(Save(QSettings&)));
+  connect(app_, SIGNAL(SaveSettings(QSettings*)), SLOT(Save(QSettings*)));
 }
 
 PlaylistView* PlaylistContainer::view() const { return ui_->playlist; }
@@ -350,13 +350,13 @@ void PlaylistContainer::DirtyTabBar() {
   app_->DirtySettings();
 }
 
-void PlaylistContainer::Save(QSettings& settings_) {
+void PlaylistContainer::Save(QSettings* settings_) {
   if (starting_up_ || !dirty_) return;
   dirty_ = false;
 
-  settings_.beginGroup(kSettingsGroup);
-  settings_.setValue("current_playlist", ui_->tab_bar->current_id());
-  settings_.endGroup();
+  settings_->beginGroup(kSettingsGroup);
+  settings_->setValue("current_playlist", ui_->tab_bar->current_id());
+  settings_->endGroup();
 }
 
 void PlaylistContainer::SetTabBarVisible(bool visible) {

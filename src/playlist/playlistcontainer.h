@@ -86,7 +86,7 @@ signals:
   void ActiveStopped();
 
   void DirtyTabBar();
-  void Save(QSettings& settings_);
+  void Save(QSettings* settings_);
 
   void SetTabBarVisible(bool visible);
   void SetTabBarHeight(int height);
