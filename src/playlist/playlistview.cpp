@@ -212,10 +212,10 @@ void PlaylistView::SetApplication(Application* app) {
   connect(app_->player(), SIGNAL(Playing()), SLOT(StartGlowing()));
   connect(app_->player(), SIGNAL(Stopped()), SLOT(StopGlowing()));
   connect(app_->player(), SIGNAL(Stopped()), SLOT(PlayerStopped()));
-  connect(app_, SIGNAL(SaveSettings(QSettings&)),
-          SLOT(SaveGeometry(QSettings&)));
-  connect(app_, SIGNAL(SaveSettings(QSettings&)),
-          SLOT(SaveSettings(QSettings&)));
+  connect(app_, SIGNAL(SaveSettings(QSettings*)),
+          SLOT(SaveGeometry(QSettings*)));
+  connect(app_, SIGNAL(SaveSettings(QSettings*)),
+          SLOT(SaveSettings(QSettings*)));
 }
 
 void PlaylistView::SetItemDelegates(LibraryBackend* backend) {
@@ -427,14 +427,14 @@ void PlaylistView::DirtyGeometry() {
   app_->DirtySettings();
 }
 
-void PlaylistView::SaveGeometry(QSettings& settings) {
+void PlaylistView::SaveGeometry(QSettings* settings) {
   if (!dirty_geometry_ || read_only_settings_ || !header_loaded_) return;
   dirty_geometry_ = false;
 
-  settings.beginGroup(Playlist::kSettingsGroup);
-  settings.setValue("state", header_->SaveState());
-  settings.setValue("state_version", kStateVersion);
-  settings.endGroup();
+  settings->beginGroup(Playlist::kSettingsGroup);
+  settings->setValue("state", header_->SaveState());
+  settings->setValue("state_version", kStateVersion);
+  settings->endGroup();
 }
 
 void PlaylistView::SetRatingLockStatus(bool state) {
@@ -1196,15 +1196,16 @@ void PlaylistView::DirtySettings() {
   app_->DirtySettings();
 }
 
-void PlaylistView::SaveSettings(QSettings& s) {
+void PlaylistView::SaveSettings(QSettings* settings) {
   if (!dirty_settings_ || read_only_settings_) return;
   dirty_settings_ = false;
 
-  s.beginGroup(Playlist::kSettingsGroup);
-  s.setValue("glow_effect", glow_enabled_);
-  s.setValue("column_alignments", QVariant::fromValue(column_alignment_));
-  s.setValue(kSettingBackgroundImageType, background_image_type_);
-  s.endGroup();
+  settings->beginGroup(Playlist::kSettingsGroup);
+  settings->setValue("glow_effect", glow_enabled_);
+  settings->setValue("column_alignments",
+                     QVariant::fromValue(column_alignment_));
+  settings->setValue(kSettingBackgroundImageType, background_image_type_);
+  settings->endGroup();
 }
 
 void PlaylistView::StretchChanged(bool stretch) {

@@ -238,7 +238,7 @@ QString Application::language_without_region() const {
   return language_name_;
 }
 
-void Application::SaveSettings_() { emit SaveSettings(settings_); }
+void Application::SaveSettings_() { emit SaveSettings(&settings_); }
 
 void Application::ReloadSettings() { emit SettingsChanged(); }
 

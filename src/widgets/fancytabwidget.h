@@ -45,7 +45,7 @@ class FancyTabWidget : public QTabWidget {
         void addSpacer();
 
         void loadSettings(const char *);
-        void saveSettings(QSettings&);
+        void saveSettings(QSettings*);
         // Values are persisted - only add to the end
         enum Mode {
             Mode_None = 0,

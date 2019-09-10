@@ -147,7 +147,7 @@ signals:
   void LoadRatingLockStatus();
   void DirtyGeometry();
   void DirtySettings();
-  void SaveGeometry(QSettings& settings);
+  void SaveGeometry(QSettings* settings);
   void SetRatingLockStatus(bool state);
   void GlowIntensityChanged();
   void InhibitAutoscrollTimeout();
@@ -155,7 +155,7 @@ signals:
   void InvalidateCachedCurrentPixmap();
   void PlaylistDestroyed();
 
-  void SaveSettings(QSettings& s);
+  void SaveSettings(QSettings* s);
   void StretchChanged(bool stretch);
 
   void RatingHoverIn(const QModelIndex& index, const QPoint& pos);

@@ -151,7 +151,7 @@ signals:
  private slots:
   void FilePathChanged(const QString& path);
 
-  void SaveSettings(QSettings& settings);
+  void SaveSettings(QSettings* settings);
   void MediaStopped();
   void MediaPaused();
   void MediaPlaying();
@@ -267,8 +267,8 @@ signals:
   void OpenSettingsDialogAtPage(SettingsDialog::Page page);
   void ShowSongInfoConfig();
 
-  void SaveGeometry(QSettings& settings);
-  void SavePlaybackStatus(QSettings& settings);
+  void SaveGeometry(QSettings* settings);
+  void SavePlaybackStatus(QSettings* settings);
   void LoadPlaybackStatus();
   void ResumePlayback();
 

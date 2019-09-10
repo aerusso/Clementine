@@ -306,8 +306,8 @@ MainWindow::MainWindow(Application* app, SystemTrayIcon* tray_icon, OSD* osd,
   connect(track_slider_timer_, SIGNAL(timeout()),
           SLOT(UpdateTrackSliderPosition()));
 
-  connect(app_, SIGNAL(SaveSettings(QSettings&)),
-          SLOT(SaveSettings(QSettings&)));
+  connect(app_, SIGNAL(SaveSettings(QSettings*)),
+          SLOT(SaveSettings(QSettings*)));
 
   // Start initialising the player
   qLog(Debug) << "Initialising player";
@@ -1280,12 +1280,12 @@ void MainWindow::ScrobbleButtonVisibilityChanged(bool value) {
   }
 }
 
-void MainWindow::SaveSettings(QSettings& settings) {
+void MainWindow::SaveSettings(QSettings* settings) {
   if (!initialized_) return;
-  settings.beginGroup(kSettingsGroup);
+  settings->beginGroup(kSettingsGroup);
   if (dirty_geometry_) SaveGeometry(settings);
   if (dirty_playback_) SavePlaybackStatus(settings);
-  settings.endGroup();
+  settings->endGroup();
 }
 
 void MainWindow::changeEvent(QEvent*) {
@@ -1298,34 +1298,34 @@ void MainWindow::resizeEvent(QResizeEvent*) {
   app_->DirtySettings();
 }
 
-void MainWindow::SaveGeometry(QSettings& settings) {
+void MainWindow::SaveGeometry(QSettings* settings) {
   if (!initialized_) return;
   dirty_geometry_ = false;
 
   was_maximized_ = isMaximized();
-  settings.setValue("maximized", was_maximized_);
+  settings->setValue("maximized", was_maximized_);
   // Save the geometry only when mainwindow is not in maximized state
   if (!was_maximized_) {
-    settings.setValue("geometry", saveGeometry());
+    settings->setValue("geometry", saveGeometry());
   }
-  settings.setValue("splitter_state", ui_->splitter->saveState());
-  settings.setValue("current_tab", ui_->tabs->currentIndex());
-  settings.setValue("tab_mode", ui_->tabs->mode());
+  settings->setValue("splitter_state", ui_->splitter->saveState());
+  settings->setValue("current_tab", ui_->tabs->currentIndex());
+  settings->setValue("tab_mode", ui_->tabs->mode());
 
   // Leaving this here for now
   ui_->tabs->saveSettings(settings);
 }
 
-void MainWindow::SavePlaybackStatus(QSettings& settings) {
+void MainWindow::SavePlaybackStatus(QSettings* settings) {
   dirty_playback_ = false;
-  settings.setValue("playback_state", app_->player()->GetState());
+  settings->setValue("playback_state", app_->player()->GetState());
   if (app_->player()->GetState() == Engine::Playing ||
       app_->player()->GetState() == Engine::Paused) {
-    settings.setValue(
+    settings->setValue(
         "playback_position",
         app_->player()->engine()->position_nanosec() / kNsecPerSec);
   } else {
-    settings.setValue("playback_position", 0);
+    settings->setValue("playback_position", 0);
   }
 }
 
@@ -2805,7 +2805,7 @@ void MainWindow::Exit() {
   dirty_playback_ = true;
   settings_.setValue("show_sidebar",
                      ui_->action_toggle_show_sidebar->isChecked());
-  SaveSettings(settings_);
+  SaveSettings(&settings_);
   settings_.sync();
 
   if (app_->player()->engine()->is_fadeout_enabled()) {

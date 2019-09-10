@@ -113,7 +113,7 @@ class Application : public QObject {
 signals:
   void ErrorAdded(const QString& message);
   void SettingsChanged();
-  void SaveSettings(QSettings& settings);
+  void SaveSettings(QSettings* settings);
   void SettingsDialogRequested(SettingsDialog::Page page);
 
  private slots:
